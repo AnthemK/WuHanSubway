@@ -253,7 +253,9 @@ int find_shortest_path(int aimstation,struct Cost_of_scheme now_status,int typ){
 	hh;puts("方案2:");print_the_path(2,typ);
 	#endif
 	for(i=1;i<cnt2;++i){              //走到这些状态，就要加代价，以此来找新的最短路 ，后面记得删除掉 
-		avoid_status[passing_situation[2][i].now_station][passing_situation[2][i].nowline+Bidirectional_line_offset]+=avoid_index;
+		if(avoid_status[passing_situation[2][i].now_station][passing_situation[2][i].nowline+Bidirectional_line_offset]==0)
+			avoid_status[passing_situation[2][i].now_station][passing_situation[2][i].nowline+Bidirectional_line_offset]+=avoid_index/2;
+		avoid_status[passing_situation[2][i].now_station][passing_situation[2][i].nowline+Bidirectional_line_offset]+=avoid_index/2;
 	}
 	
 	spfa(initial_status,typ);
