@@ -1,0 +1,41 @@
+# Project: WuHanSubway
+# Makefile created by Dev-C++ 5.4.2
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o database.o answer.o gtk-gui.o Info_masking.o
+LINKOBJ  = main.o database.o answer.o gtk-gui.o Info_masking.o
+LIBS     = -L"E:/Dev  C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -L"C:/Environment/gmp-6.2.1/.libs" -LC:/Environment/MSYS2/mingw64/bin/../lib -lgtk-3 -lgdk-3 -lz -lgdi32 -limm32 -lshell32 -lole32 -Wl,-luuid -lwinmm -ldwmapi -lsetupapi -lcfgmgr32 -lpangowin32-1.0 -lpangocairo-1.0 -lpango-1.0 -lharfbuzz -latk-1.0 -lcairo-gobject -lcairo -lgdk_pixbuf-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lintl
+INCS     = -I"E:/Dev  C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Environment/gmp-6.2.1/.libs"
+CXXINCS  = -I"E:/Dev  C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include"
+BIN      = WuHanSubway.exe
+CXXFLAGS = $(CXXINCS) -Wall -std=c++11 -IC:/Environment/MSYS2/mingw64/bin/../include/gtk-3.0 -IC:/Environment/MSYS2/mingw64/bin/../include/pango-1.0 -IC:/Environment/MSYS2/mingw64/bin/../include -IC:/Environment/MSYS2/mingw64/bin/../include/glib-2.0 -IC:/Environment/MSYS2/mingw64/bin/../lib/glib-2.0/include -IC:/Environment/MSYS2/mingw64/bin/../include/harfbuzz -IC:/Environment/MSYS2/mingw64/bin/../include/freetype2 -IC:/Environment/MSYS2/mingw64/bin/../include/libpng16 -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/fribidi -IC:/Environment/MSYS2/mingw64/bin/../include/cairo -IC:/Environment/MSYS2/mingw64/bin/../include/lzo -IC:/Environment/MSYS2/mingw64/bin/../include/pixman-1 -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/gdk-pixbuf-2.0 -mms-bitfields -mms-bitfields -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/atk-1.0 -mms-bitfields -mms-bitfields -mms-bitfields -pthread -mms-bitfields
+CFLAGS   = $(INCS) -Wall -std=c++11 -IC:/Environment/MSYS2/mingw64/bin/../include/gtk-3.0 -IC:/Environment/MSYS2/mingw64/bin/../include/pango-1.0 -IC:/Environment/MSYS2/mingw64/bin/../include -IC:/Environment/MSYS2/mingw64/bin/../include/glib-2.0 -IC:/Environment/MSYS2/mingw64/bin/../lib/glib-2.0/include -IC:/Environment/MSYS2/mingw64/bin/../include/harfbuzz -IC:/Environment/MSYS2/mingw64/bin/../include/freetype2 -IC:/Environment/MSYS2/mingw64/bin/../include/libpng16 -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/fribidi -IC:/Environment/MSYS2/mingw64/bin/../include/cairo -IC:/Environment/MSYS2/mingw64/bin/../include/lzo -IC:/Environment/MSYS2/mingw64/bin/../include/pixman-1 -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/gdk-pixbuf-2.0 -mms-bitfields -mms-bitfields -mms-bitfields -IC:/Environment/MSYS2/mingw64/bin/../include/atk-1.0 -mms-bitfields -mms-bitfields -mms-bitfields -pthread -mms-bitfields
+RM       = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+database.o: database.c
+	$(CC) -c database.c -o database.o $(CFLAGS)
+
+answer.o: answer.c
+	$(CC) -c answer.c -o answer.o $(CFLAGS)
+
+gtk-gui.o: gtk-gui.c
+	$(CC) -c gtk-gui.c -o gtk-gui.o $(CFLAGS)
+
+Info_masking.o: Info_masking.c
+	$(CC) -c Info_masking.c -o Info_masking.o $(CFLAGS)
