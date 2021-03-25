@@ -76,7 +76,7 @@ int main(int argc , char **argv)
     命令行式的操作方法（供测试后端用）
 	2.路线推荐 
     ***************/	
-	nowwa_scheme.aver_crowd=0;nowwa_scheme.dist=0;nowwa_scheme.last_status=NULL;nowwa_scheme.maincost=0;nowwa_scheme.nowline=0;
+	nowwa_scheme.aver_crowd=0.0;nowwa_scheme.dist=0;nowwa_scheme.last_status=NULL;nowwa_scheme.maincost=0;nowwa_scheme.nowline=0;
 	nowwa_scheme.now_station=now_station;nowwa_scheme.number_of_station=0;nowwa_scheme.limit_factor=1.0;
 	nowwa_scheme.number_of_transfer=0;nowwa_scheme.tot_crowd=0.0;
 	nowwa_scheme.starttime=nowwa_scheme.nowtime;         //重新计时 
@@ -94,58 +94,10 @@ int main(int argc , char **argv)
 	#endif                     //以上部分为使用命令行操作的 
 	
 	
-	
-	
 	#ifdef use_gui
     gtk_gui(argc,argv);
 	#endif
 	return 0; 
 }
 
-/*
-华中科技大学 
-13 35
-0
-武汉火车站 
-2
-
-循礼门 
-8 30 
-0
-三阳路
-4
-0.81 
-
-
-
-华中科技大学 
-6 0
-0
-岳家嘴 
-2
-
-
-
-循礼门 
-8 30 
-0
-三阳路
-6
-0.81  
-
-
-应该1号线到底 
-
-
-？？？？？？？？？？？？？ 
-秀湖
-0 01 
-0
-佛祖岭 
-2
-
-卡死 
-
-
-*/
 

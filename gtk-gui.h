@@ -1,18 +1,7 @@
 #include <gtk/gtk.h>       // gtk
 #include <cairo.h>	// 绘图所需要的头文件 
 #include "database.h"
- 
-/*
-仍需要解决的问题：
-1. ComboBoxText的默认选择问题，否则在访问一个空的ComboBoxText的时候可能会出现错误导致停机。  完成 
-2.  Find_way_type_clicked函数部分 
-			后续（待完成），应该在找到最短路之后，按照gui的要求输出方案，暂时定为利用绘图事件在地图底板上完成。
-			这个部分应该再分一个函数完成 
-			完成 
-3.  当一个窗口被关闭的时候 不能destroy 必须hide  否则就不能重复使用 
-4.  多次点击同一个按钮应该清空，从头开始   暂时注释 
-5.  信息安全相关需求   数据加密， 
-*/ 
+
  
 
 extern int number_of_station,number_of_edge,free_travel_distance;
@@ -32,6 +21,7 @@ char *_utf8(char * str);
 /************************************ 
 	函数名：printt_nowwa_scheme
 	描述：将当前状态输出到一个label窗口里，如果typ==1的话就输出当前站的换乘信息 
+	注意：  字符串在加入到temporary_string的时候就要转成utf-8型 
 	输入参数： typ 表示类型            默认调取nowwa_scheme 
 				0 只输出当前位置等状态信息 
 	输出参数：  输出到窗口里 
@@ -80,7 +70,8 @@ void change_time_window_affirm_clicked(GtkWidget *widget,gpointer data);
 /************************************ 
 	函数名：Change_time_button_clicked
 	描述：当修改时间被点击之后，调用的回调函数。
-			主要有两个功能，第一是生成出修改时间的界面，包括界面生成和ComboBoxText中选项的添加，第二则是当确定被点击的时候确定调用回调函数 
+			主要有两个功能，第一是生成出修改时间的界面，包括界面生成和ComboBoxText中选项的添加，
+							第二则是当确定被点击的时候确定调用回调函数 
 	输入参数：  widget： 当前发生变化的控件 
 				data ： 恒为NULL 
 	输出参数：修改nowwa_scheme.nowtime 并且隐藏界面 
@@ -94,11 +85,12 @@ void Change_time_button_clicked(GtkWidget *widget,gpointer data);
 	函数名：Change_crowding_factor_clicked
 	描述：当修改拥挤系数被点击之后，调用的回调函数。
 			 
-			 此处我偷了个懒，直接隐藏当前界面，然后让使用者按照数据格式，输入修改 
+			 此处直接隐藏当前界面，然后让使用者按照数据格式，输入修改 
 	
 			主要有两个功能，第一先隐藏，后显示原界面，使得方便操作，第二则是通过命令行的方式接入修改命令，并且判断命令是否合法 
 	输入参数：  widget： 当前发生变化的控件 
-				data ： 主界面的指针window 
+				data ： 主界面的指针window
+				还有从命令行窗口读入的修改信息 
 	输出参数：调用change_Crowdedness函数，完成对于的一定时间，一定线路的拥挤系数修改 
 	编程者：HUST IS-1901 李文重
 	日期：2021.3.9
@@ -130,8 +122,6 @@ void Travel_at_line(GtkWidget *widget,gpointer data);
 	状态 ：已完成，已检查  
 //**********************************/ 
 void Free_travel(GtkWidget *widget,gpointer data); 
-
-
 
 /************************************ 
 	函数名：Find_way_type_clicked
@@ -188,9 +178,6 @@ void Drawing_orign_map(GtkWidget *widget,gpointer data);
 	状态 ：已完成，已检查  
 //**********************************/ 
 void Drawing_crowded_map(GtkWidget *widget,gpointer data);
-
-
-
 
 /************************************ 
 	函数名：printt_nowway_map

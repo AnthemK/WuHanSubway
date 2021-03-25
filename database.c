@@ -30,17 +30,7 @@ extern double Crowdedness[total_number_of_line][total_number_of_edge];
 
 
 
-/************************************ 
-	函数名：lines_that_pass_this_station
-	描述：查找有哪些线路通过本站 
-	函数原型： void lines_that_pass_this_station(int stationid);
-	输入参数：站id 
-	输出参数：无
-		但是会修改 line_in_this_station 数组，初始或不通过这个节点为-1，否则为最近一班车到达的时间 ，考虑到线路有负数，故加10存储 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.4 
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 void lines_that_pass_this_station(int stationid,int now_time){
 	int i;
 	for(i=0;i<total_number_of_line;++i) line_in_this_station[i]=-1;
@@ -60,20 +50,6 @@ void lines_that_pass_this_station(int stationid,int now_time){
 	return;
 }
 
-/************************************ 
-	函数名：change_Crowdedness 
-	描述：修改一个线路一段时间的拥挤度（并非系数，系数需要经过计算） 
-	函数原型： int change_Crowdedness(int now_line,int frotime,int totime,double new_crowdedness);
-	输入参数： now_line 要修改的线路 ,此处默认两个方向的拥挤度相同，因此没有偏移存储 
-				fromtime totime 要修改的时间区间
-				new_crowdedness 修改后的拥挤系数(0.0-1.0)
-				添加了对传入参数越界和fromtime，totime大小反向的判断 
-	输出参数： 如果程序正确修改了，就返回1
-			   如果出现错误，就返回0 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查 
-//**********************************/ 
 int change_Crowdedness(int now_line,int fromtime,int totime,double new_crowdedness){
 	if((now_line>8||now_line<1||now_line==5)||(fromtime<0||fromtime>trans_time(24,0))||(totime<0||totime>trans_time(24,0))||(new_crowdedness<0.0||new_crowdedness>1.0))
 	return 0;
@@ -83,16 +59,6 @@ int change_Crowdedness(int now_line,int fromtime,int totime,double new_crowdedne
 	return 1;
 }
 
-/************************************ 
-	函数名：add_edge
-	描述：在两个站间添加有向边
-	函数原型： void add_edge(int frompoint,int topoint,double Crowding_factor,int belonging_line,double lenth)
-	输入参数： 含义见英文，类型见函数定义 
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.25 
-	状态 ：已完成，已检查 
-//**********************************/ 
 void add_edge(int frompoint,int topoint,double Crowding_factor,int belonging_line,double lenth){
 	Edge[++number_of_edge].belonging_line=belonging_line;Edge[number_of_edge].Crowding_factor=Crowding_factor;
 	Edge[number_of_edge].lenth=lenth;Edge[number_of_edge].time=2;
@@ -106,16 +72,6 @@ void add_edge(int frompoint,int topoint,double Crowding_factor,int belonging_lin
 	return;
 }
 
-/************************************ 
-	函数名：Name_find_station 
-	描述：使用汉语车站名找到它的id 但此处的复杂度为 O(number_of_station) 
-	函数原型： int Name_find_station(char *stationname);
-	输入参数：一个车站的名字 stationname 
-	输出参数：这个车站的序号 ，如果不存在就返回0 
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.28 
-	状态 ：已完成，已检查 
-//**********************************/ 
 int Name_find_station(char *stationname){
 		int i;
 		for(i=1;i<=number_of_station;++i)
@@ -125,16 +81,6 @@ int Name_find_station(char *stationname){
 	return 0;
 }
 
-/************************************ 
-	函数名：Calculate_the_fare 
-	描述：根据给出的公里数，计算分段票价。使用向上取整的方法。 
-	函数原型： int Calculate_the_fare(double total_km);
-	输入参数：一个路程的总公里数 
-	输出参数：收取的车票价格 
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.25 
-	状态 ：已完成，已检查 
-//**********************************/ 
 int Calculate_the_fare(double total_km){
 	int Fare=0;
 	if(total_km>50.0) Fare+=(int )ceil((total_km-50)/20.0),total_km=50.0;
@@ -146,20 +92,7 @@ int Calculate_the_fare(double total_km){
 	return Fare;
 }
 
-/************************************ 
-	函数名：get_modified_coefficient
-	描述：计算当前边在当前时间，当前优先级类型下的权值修正系数 
-	函数原型：double get_modified_coefficient(struct Edge_of_subway *now_edge,int typ,int time);
-	输入参数：当前边now_edge，当前类型typ，当前时间 time
-		其中typ == 1  表示不理会拥挤度，默认为1.0 找最少时间的方案 
-		如果typ == 2 就使用宽松、一般拥挤、拥挤的约定 （默认方法） 
-		如果typ == 3 就使用对拥挤系数取exp再取exp作为修正系数，这样可以保证会很大程度上规避拥挤，但是也不会出现因为等拥挤而等几个小时的问题 
-		如果typ == 4 就设定一个可以容忍的上线limit_factor，不走拥挤系数大于他的边，但是由于没有传入这个上限，所以返回当前拥挤系数，在调用函数里判断是否不能走 	
-	输出参数：修正系数 ,如果当前不可行就返回一个极大的数 
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.25 
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 double get_modified_coefficient(struct Edge_of_subway *now_edge,int typ,struct Cost_of_scheme *now_status){
 	if(typ==6||typ==5||typ==0) typ=2; 
 	double ans=1.0;
@@ -185,20 +118,6 @@ double get_modified_coefficient(struct Edge_of_subway *now_edge,int typ,struct C
 }
 
 
-/************************************ 
-	函数名：Calculate_the_cost 
-	描述：计算当前边在当前时间，当前优先级类型下的消耗，再结合传进来的之前状态，获得走这条边之后的状态 
-	函数原型： struct Cost_of_scheme Calculate_the_cost(struct Edge_of_subway *now_edge,struct Cost_of_scheme *now_situation,int typ);
-	输入参数： 当前边now_edge，当前状态now_situation 
-			  对于typ:
-					case 1，2，3，4的含义见get_modified_coefficient 函数前的注释 
-					case 5 最低票价（最小里程） 
-					case 6 最少换乘下最低票价 
-	输出参数：返回走这条边之后的状态 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5
-	状态 ：已完成，已检查  
-//**********************************/ 
 struct Cost_of_scheme Calculate_the_cost(struct Edge_of_subway *now_edge,struct Cost_of_scheme *now_status,int typ){
 	int cost_to_station=((now_edge->belonging_line>0)?(Stations[now_edge->to_station].number_on_line[now_edge->belonging_line]-1)*3:\
 	(Subwaylines[-1*now_edge->belonging_line].total_station-Stations[now_edge->to_station].number_on_line[-1*now_edge->belonging_line])*3);
@@ -239,7 +158,8 @@ struct Cost_of_scheme Calculate_the_cost(struct Edge_of_subway *now_edge,struct 
 	}
 	if(typ==5||typ==6) after_status.maincost+=now_edge->lenth;
 	else if(typ<=4&&typ>=1) after_status.maincost+=2*Modified_Coefficient;
-	after_status.nowline=now_edge->belonging_line;after_status.now_station=now_edge->to_station;after_status.tot_crowd+=Crowdedness[after_status.nowline][after_status.nowtime];after_status.nowtime+=now_edge->time;
+	after_status.nowline=now_edge->belonging_line;after_status.now_station=now_edge->to_station;after_status.tot_crowd+=Crowdedness[abs(after_status.nowline)][after_status.nowtime];
+	after_status.nowtime+=now_edge->time;
 	after_status.dist+=now_edge->lenth;after_status.number_of_station++;after_status.aver_crowd+=Modified_Coefficient;
 	//outt(ans_scheme.nowtime);outt(trans_time(23,0)+cost_to_station);
 	if(after_status.nowtime-3>trans_time(23,0)+cost_to_station){
@@ -251,17 +171,7 @@ struct Cost_of_scheme Calculate_the_cost(struct Edge_of_subway *now_edge,struct 
 	return after_status;
 }
 
-/************************************ 
-	函数名：if_scheme_equal
-	描述：判断两个方案是不是相同 
-	函数原型： int if_scheme_equal(struct Cost_of_scheme a,struct Cost_of_scheme b); 
-	输入参数：两个  Cost_of_scheme型变量 
-	输出参数：0 不相等
-			  1 相等 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 int if_scheme_equal(struct Cost_of_scheme a,struct Cost_of_scheme b){
 		if(abs(a.dist-b.dist)<=eqs&&abs(a.aver_crowd-b.aver_crowd)<=eqs\
 		 	&&a.nowtime==b.nowtime&&a.number_of_transfer==b.number_of_transfer\
@@ -269,17 +179,6 @@ int if_scheme_equal(struct Cost_of_scheme a,struct Cost_of_scheme b){
 		 return 0;
 }
 
-/************************************ 
-	函数名：init_station 
-	描述：导入车站信息，到结构体数组Stations里
-	函数原型： void init_station(void)
-	输入参数：无
-		输入文件： ./data/stationinfo.txt   里面应该是所有站点（无重复）的信息（名称） 
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查 
-//**********************************/ 
 void init_station(){
 	FILE *station_info = fopen("./data/dec_stationinfo.txt","r");
 	if(!station_info) {
@@ -300,19 +199,6 @@ void init_station(){
 } 
 
 
-
-
-/************************************ 
-	函数名：init_line 
-	描述：导入线路信息信息，到结构体里。 
-	函数原型： void init_line(void)
-	输入参数：无
-		输入文件： ./data/subwayline.txt   里面应该是所有线路的信息，包括长度、线路经过站点个数、容量 
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.25 
-	状态 ：已完成，已检查 
-//**********************************/ 
 void init_line(){
 	FILE *subway_line = fopen("./data/dec_subwayline.txt","r");
 	if(!subway_line) {
@@ -345,16 +231,7 @@ void init_line(){
 	return;
 }
 
-/************************************ 
-	函数名：init_Crowdedness 
-	描述：初始化各个线路在每个时间段上的拥挤系数。 
-	函数原型： void init_Crowdedness()； 
-	输入参数：无
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 void init_Crowdedness(){
 	int i,j; 
 	for(i=0;i<=trans_time(24,0);++i){
@@ -389,16 +266,7 @@ void init_Crowdedness(){
 	return;
 }
 
-/************************************ 
-	函数名：init_coordinates
-	描述：输入各个车站的经纬度作标 
-	函数原型： void init_coordinates()； 
-	输入参数：在./data/Coordinates.txt中输入车站的经纬度坐标 
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.10 
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 void init_coordinates(){
 	FILE *station_coordinates = fopen("./data/dec_Coordinates.txt","r");
 	if(!station_coordinates) {
@@ -418,14 +286,12 @@ void init_coordinates(){
 		fscanf(station_coordinates,"%lf,%lf",&Stations[stationid].longitude,&Stations[stationid].latitude);
 		#ifdef debug
 		fprintf(Long_debugging_information,"Station:%s  ,id：%d，longitude:%lf   latitude :%lf\n",stationname,stationid,Stations[stationid].longitude,Stations[stationid].latitude);	
-		#endif
 		
 		maxx=(maxx>Stations[stationid].longitude)?maxx:Stations[stationid].longitude;
 		maxy=(maxy>Stations[stationid].latitude)?maxy:Stations[stationid].latitude;
 		minx=(minx<Stations[stationid].longitude)?minx:Stations[stationid].longitude;
 		miny=(miny<Stations[stationid].latitude)?miny:Stations[stationid].latitude;
-		
-		
+		#endif	
 		
 		#ifdef use_gui
 		//Stations[stationid].longitude = 2320.98 * Stations[stationid].longitude - 264764+180;
@@ -446,16 +312,6 @@ void init_coordinates(){
 
 
 
-/************************************ 
-	函数名：init 
-	描述：在main.c里面调用这个函数，在从这个函数来调用其他初始化函数，实现初始化过程。本函数是一个控制函数。 
-	函数原型： void init()
-	输入参数：无
-	输出参数：无
-	编程者：HUST IS-1901 李文重
-	日期：2021.2.25 
-	状态 ：已完成，已检查 
-//**********************************/ 
 void init(){
 	number_of_station=number_of_edge=0;
 	Long_debugging_information = fopen("./data/Long_debugging_information.txt","w");

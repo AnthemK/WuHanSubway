@@ -1,8 +1,5 @@
 #include "gtk-gui.h" 
  
- 
- 
- 
 int startx = 0,i,j,k,lenth;
 int w = 400;
 int h = 300;
@@ -14,18 +11,18 @@ extern struct Cost_of_scheme nowwa_scheme,next_scheme;
 GtkBuilder *main_builder;
 char linshi[100000];
 
-char *_utf8(char * str) {return g_locale_to_utf8(str, -1, NULL, NULL, NULL);}
+char *_utf8(char * str) {return g_locale_to_utf8(str, -1, NULL, NULL, NULL);}    
 
-void printt_nowwa_scheme(int typ)
+void printt_nowwa_scheme(int typ)        //字符串在加入的时候就要转成utf-8型 
 {
-	
 	GtkWidget *Entry_window = GTK_WIDGET(gtk_builder_get_object(main_builder,"Entry_window")); 
 	GtkTextBuffer *Print_text_buffer = gtk_text_buffer_new(NULL);
 	GtkWidget *Print_nowpls = GTK_WIDGET(gtk_builder_get_object(main_builder,"Print_nowpls"));           //GtkTextView
     gtk_window_set_title(GTK_WINDOW(Entry_window), _utf8("文本输出窗口"));
-	gtk_window_set_position(GTK_WINDOW(Entry_window),GTK_WIN_POS_CENTER);
+	gtk_window_set_position(GTK_WINDOW(Entry_window),GTK_WIN_POS_NONE);        //不固定窗口的位置 
 	gtk_window_set_resizable(GTK_WINDOW(Entry_window),FALSE);
 	gtk_widget_set_size_request(Entry_window,400,300);
+	gtk_window_set_deletable(GTK_WINDOW(Entry_window),0);       //窗口不能被关闭 
 		
 	temporary_string[0]=0;
 	strcat(temporary_string,_utf8("本站是"));
@@ -33,14 +30,14 @@ void printt_nowwa_scheme(int typ)
 	strcat(temporary_string,"\n");
 	//gtk_text_buffer_insert_at_cursor(Print_text_buffer,temporary_string,-1);
 	
-	strcat(temporary_string,_utf8("   当前时间是"));
+	strcat(temporary_string,_utf8("当前时间是:"));
 	itoa(nowwa_scheme.nowtime/60,linshi,10);strcat(temporary_string,linshi);
 	strcat(temporary_string,":");
 	itoa(nowwa_scheme.nowtime%60,linshi,10);strcat(temporary_string,linshi);
 	strcat(temporary_string,"\n");
 	//gtk_text_buffer_insert_at_cursor (Print_text_buffer,temporary_string,-1);
 	
-	strcat(temporary_string,_utf8("   当前已经行走了的距离是"));
+	strcat(temporary_string,_utf8("当前已经行走了的距离是"));
 	gcvt(nowwa_scheme.dist,5,linshi);strcat(temporary_string,linshi);
 	strcat(temporary_string,"km\n");
 	//gtk_text_buffer_insert_at_cursor (Print_text_buffer,temporary_string,-1);
@@ -65,7 +62,7 @@ void printt_nowwa_scheme(int typ)
 	
 	gtk_text_buffer_insert_at_cursor (Print_text_buffer,temporary_string,-1);
 	gtk_text_view_set_buffer (GTK_TEXT_VIEW(Print_nowpls),Print_text_buffer);
-	gtk_widget_hide(GTK_WINDOW(Entry_window));
+//	gtk_widget_hide(GTK_WINDOW(Entry_window));
 	gtk_widget_show_all(GTK_WINDOW(Entry_window));
 	return; 
 }
@@ -76,12 +73,14 @@ void printt_string(char *nowwa)
 	GtkTextBuffer *Print_text_buffer = gtk_text_buffer_new(NULL);
 	GtkWidget *Print_nowpls = GTK_WIDGET(gtk_builder_get_object(main_builder,"Print_nowpls")); 
     gtk_window_set_title(GTK_WINDOW(Entry_window), _utf8("文本输出窗口"));
-	gtk_window_set_position(GTK_WINDOW(Entry_window),GTK_WIN_POS_CENTER);
+	gtk_window_set_position(GTK_WINDOW(Entry_window),GTK_WIN_POS_NONE);
 	gtk_window_set_resizable(GTK_WINDOW(Entry_window),FALSE);
 	gtk_widget_set_size_request(Entry_window,600,300);	
+	gtk_window_set_deletable(GTK_WINDOW(Entry_window),0);       //窗口不能被关闭 
+	
 	gtk_text_buffer_insert_at_cursor(Print_text_buffer,nowwa,-1);
 	gtk_text_view_set_buffer(GTK_TEXT_VIEW(Print_nowpls),Print_text_buffer);
-	gtk_widget_hide(GTK_WINDOW(Entry_window));
+	//gtk_widget_hide(GTK_WINDOW(Entry_window));
 	gtk_widget_show_all(GTK_WINDOW(Entry_window));
 }
 
@@ -113,7 +112,7 @@ void change_time_window_affirm_clicked(GtkWidget *widget,gpointer data)
 	#ifdef debug
 	outt(nowwa_scheme.nowtime);
 	#endif
-	gtk_widget_hide(GTK_WIDGET(data));
+	gtk_widget_hide(GTK_WIDGET(data));       //此处保留，因为即使出现重叠也无所谓 
 	return;
 }
 
@@ -121,7 +120,7 @@ void Change_time_button_clicked(GtkWidget *widget,gpointer data)
 {
  	GtkWidget *change_time_window = GTK_WIDGET(gtk_builder_get_object(main_builder,"change_time_window"));   
     gtk_window_set_title(GTK_WINDOW(change_time_window), _utf8("时间调整"));
-	gtk_window_set_position(GTK_WINDOW(change_time_window),GTK_WIN_POS_CENTER);
+	gtk_window_set_position(GTK_WINDOW(change_time_window),GTK_WIN_POS_CENTER);    //在中间显示窗口 
 	gtk_widget_set_size_request(change_time_window,300,100);
 	gtk_window_set_resizable(GTK_WINDOW(change_time_window),FALSE);
 	gtk_window_set_deletable(GTK_WINDOW(change_time_window),0);
@@ -148,12 +147,12 @@ void Change_time_button_clicked(GtkWidget *widget,gpointer data)
     	gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(change_time_window_minute),NULL,_utf8(temporary_string));   
     	//gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(topoint_line),NULL,temporary_string);   	
     } 	
-    gtk_combo_box_set_active(GTK_COMBO_BOX_TEXT(change_time_window_hour),8);
-    gtk_combo_box_set_active(GTK_COMBO_BOX_TEXT(change_time_window_minute),0);
+    gtk_combo_box_set_active(GTK_COMBO_BOX_TEXT(change_time_window_hour),nowwa_scheme.nowtime/60);
+    gtk_combo_box_set_active(GTK_COMBO_BOX_TEXT(change_time_window_minute),nowwa_scheme.nowtime%60);
     
  	GtkWidget *change_time_window_affirm_button = GTK_WIDGET(gtk_builder_get_object(main_builder,"change_time_window_affirm_button"));
 	g_signal_connect(change_time_window_affirm_button,"clicked", G_CALLBACK(change_time_window_affirm_clicked), change_time_window);	
-	gtk_widget_hide(change_time_window);	    
+	//gtk_widget_hide(change_time_window);	       //没必要刷新了 
 	gtk_widget_show_all(change_time_window);
 	return;
 }
@@ -165,19 +164,26 @@ void Change_crowding_factor_clicked(GtkWidget *widget,gpointer data)
 	int now_line,fromtimehour,fromtimeminute,totimehour,totimeminute;
 	double new_crowdedness;	
 	Change_crowding_factor_failed:
-	puts("请输入你想要修改的线路,开始时间(两个整数表示小时和分钟),结束时间(两个整数表示小时和分钟),和修改后的拥挤度数值:"); 
-	scanf("%d%d%d%d%d%lf",&now_line,&fromtimehour,&fromtimeminute,&totimehour,&totimeminute,&new_crowdedness);
+	puts("请输入你想要修改的线路,开始时间(两个整数表示小时和分钟),结束时间(两个整数表示小时和分钟),和修改后的拥挤度数值(输入0则不进行修改):"); 
+	scanf("%d",&now_line);
+	if(now_line==0){
+		puts("取消修改！"); 
+		sleep(2);
+		gtk_widget_show_all(GTK_WIDGET(data));
+		return;
+	} 	
+	scanf("%d%d%d%d%lf",&fromtimehour,&fromtimeminute,&totimehour,&totimeminute,&new_crowdedness);
+
 	if(now_line>=1&&now_line<=8&&now_line!=5&&fromtimehour>=0&&fromtimehour<=24&&fromtimeminute>=0&&fromtimeminute<=59&&totimehour>=0&&totimehour<=24&&totimeminute>=0&&totimeminute<=59&&new_crowdedness>=0.0&&new_crowdedness<=1.0)
 	{
 		change_Crowdedness(now_line,trans_time(fromtimehour,fromtimeminute),trans_time(totimehour,totimeminute),new_crowdedness);
 		puts("修改成功！");
-	} else 
-	{
-		puts("数据不合法");
+	} else {
+		puts("数据不合法！");
 		goto Change_crowding_factor_failed;
 	}
 	sleep(2);
-	gtk_widget_hide(GTK_WIDGET(data));	
+	//gtk_widget_hide(GTK_WIDGET(data));
 	gtk_widget_show_all(GTK_WIDGET(data));
 	return;
 }
@@ -200,16 +206,18 @@ void Travel_at_line(GtkWidget *widget,gpointer data)
 void Free_travel(GtkWidget *widget,gpointer data) 
 {
  	GtkWidget *frompoint_line=GTK_WIDGET(gtk_builder_get_object(main_builder,"frompoint_line")),*frompoint_station=GTK_WIDGET(gtk_builder_get_object(main_builder,"frompoint_station"));
- 	strcpy(temporary_string,Subwaylines[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))+((gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))>3)?2:1)].stations[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_station))+1]);
+ 	temporary_string[0]=0; 
+	strcpy(temporary_string,Subwaylines[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))+((gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))>3)?2:1)].stations[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_station))+1]);
  	nowwa_scheme.now_station=Name_find_station(temporary_string);
- 	#ifndef debug             //这里是默认会输出 
-	printf("Start at:%s\n id is %d,xxxxxxxxxx%s\n",temporary_string,nowwa_scheme.now_station,Stations[nowwa_scheme.now_station].name);
- 	#endif 
+ 	
+	//#ifndef debug             //这里是默认会输出 
+	printf("Start at:%s\n id is %d,at %d:%d\n",temporary_string,nowwa_scheme.now_station,nowwa_scheme.nowtime/60,nowwa_scheme.nowtime%60);
+ 	//#endif 
  	//  获得当前站点信息 
 
 	nowwa_scheme.aver_crowd=0.0;nowwa_scheme.dist=0;nowwa_scheme.last_status=NULL;nowwa_scheme.maincost=0;nowwa_scheme.nowline=0;nowwa_scheme.tot_crowd=0.0;
 	nowwa_scheme.number_of_transfer=0;nowwa_scheme.number_of_station=0;nowwa_scheme.limit_factor=1.0;nowwa_scheme.starttime=nowwa_scheme.nowtime;
- 	for(i=1;i<=free_travel_distance+2;++i) passing_situation[0][i]=nowwa_scheme;
+ 	for(i=1;i<=free_travel_distance+2;++i) passing_situation[0][i]=nowwa_scheme;   //这一步是干什么来着的？？？ 
  	free_travel_distance=0;          //清空路径 	
 	lines_that_pass_this_station(nowwa_scheme.now_station,nowwa_scheme.nowtime);
 	passing_situation[0][++free_travel_distance]=nowwa_scheme;passing_situation[0][1].number_of_station=free_travel_distance-1;
@@ -222,7 +230,7 @@ void Free_travel(GtkWidget *widget,gpointer data)
     gtk_window_set_title(GTK_WINDOW(Free_travel_option), _utf8("自由遍历方案"));
 	gtk_window_set_position(GTK_WINDOW(Free_travel_option),GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(Free_travel_option),FALSE);	
-
+	gtk_window_set_deletable(GTK_WINDOW(Free_travel_option),0);
 	
 	//第二个下划线表示负号  此处是链接回调函数 
 	GtkWidget *line_id__1 = GTK_WIDGET(gtk_builder_get_object(main_builder,"line_id__1")); 	
@@ -259,7 +267,7 @@ void Free_travel(GtkWidget *widget,gpointer data)
 	g_signal_connect(line_id__8,"clicked", G_CALLBACK(Travel_at_line), just_number+Bidirectional_line_offset-8);
 	GtkWidget *line_id_8 = GTK_WIDGET(gtk_builder_get_object(main_builder,"line_id_8")); 	
 	g_signal_connect(line_id_8,"clicked", G_CALLBACK(Travel_at_line), just_number+Bidirectional_line_offset+8);	
-	gtk_widget_hide(GTK_WIDGET(Free_travel_option));	
+	//gtk_widget_hide(GTK_WIDGET(Free_travel_option));	
 	gtk_widget_show_all(GTK_WIDGET(Free_travel_option));
   	return;
 }
@@ -267,6 +275,7 @@ void Free_travel(GtkWidget *widget,gpointer data)
  
 void Find_way_type_clicked(GtkWidget *widget,gpointer data)
 {
+	temporary_string[0]=0;
 	#ifdef debug
 	strcpy(temporary_string,gtk_button_get_label(GTK_BUTTON(widget)));
 	printf("%s\n",temporary_string);
@@ -275,7 +284,7 @@ void Find_way_type_clicked(GtkWidget *widget,gpointer data)
 	if(preferred_type==4){
 		GtkWidget *find_way_type4_entry = GTK_WIDGET(gtk_builder_get_object(main_builder,"find_way_type4_entry"));  
 		strcpy(temporary_string,gtk_entry_get_text(GTK_ENTRY(find_way_type4_entry)));
-		nowwa_scheme.limit_factor =atof(temporary_string);
+		nowwa_scheme.limit_factor=atof(temporary_string);
 		#ifdef  debug
 		printf("type == 4 ,and limit_factor == %lf\n",nowwa_scheme.limit_factor);
 		#endif
@@ -288,30 +297,34 @@ void Find_way_type_clicked(GtkWidget *widget,gpointer data)
 
  	strcpy(temporary_string,Subwaylines[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))+((gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_line))>3)?2:1)].stations[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(frompoint_station))+1]);
  	nowwa_scheme.now_station=Name_find_station(temporary_string);
- 	#ifndef debug             //这里是默认会输出到命令行 
-	printf("Start at:%s\n id is %d,xxxxxxxxxx%s\n",temporary_string,nowwa_scheme.now_station,Stations[nowwa_scheme.now_station].name);
- 	#endif 
  	
-
+	//#ifndef debug             //这里是默认会输出到命令行 
+	puts("开始寻路过程：");
+	printf("Start at:%s\n id is %d,xxxxxxxxxx%s\n",temporary_string,nowwa_scheme.now_station,Stations[nowwa_scheme.now_station].name);
+ 	//#endif 
+ 	
  	strcpy(temporary_string,Subwaylines[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(topoint_line))+((gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(topoint_line))>3)?2:1)].stations[gtk_combo_box_get_active(GTK_COMBO_BOX_TEXT(topoint_station))+1]);
  	aim_station=Name_find_station(temporary_string);	
- 	#ifndef debug            //这里是默认会输出到命令行 
+ 	//#ifndef debug            //这里是默认会输出到命令行 
 	printf("End at:%s\n id is %d,xxxxxxxxxx%s\n",temporary_string,aim_station,Stations[aim_station].name);
- 	#endif 
-	#ifndef debug           //这里是默认会输出到命令行 
+ 	//#endif 
+	//#ifndef debug           //这里是默认会输出到命令行 
 	printf("Time is :%d:%d,Typ is %d\n\n\n",nowwa_scheme.nowtime/60,nowwa_scheme.nowtime%60,preferred_type);
-	#endif
+	//#endif
+	
 	nowwa_scheme.aver_crowd=0.0;nowwa_scheme.dist=0;nowwa_scheme.last_status=NULL;nowwa_scheme.maincost=0;nowwa_scheme.nowline=0;
 	nowwa_scheme.number_of_transfer=0;nowwa_scheme.number_of_station=0;nowwa_scheme.starttime=nowwa_scheme.nowtime;nowwa_scheme.tot_crowd=0.0;
 
 	GtkWidget *find_way_type_window = GTK_WIDGET(gtk_builder_get_object(main_builder,"find_way_type_window"));   
-	gtk_widget_hide(GTK_WIDGET(find_way_type_window));
+	gtk_widget_hide(GTK_WIDGET(find_way_type_window));    //这里似乎没有出过问题，因此不修改 
+	
 	if(nowwa_scheme.now_station==aim_station){
 		printt_string(_utf8("你不需要在同站乘地铁"));
 	}
 	else {
 		temporary_string[0]=0;
 		find_shortest_path(aim_station,nowwa_scheme,preferred_type);
+		strcat(temporary_string,"如果想要获得详细的经过站点信息，请去浏览命令行窗口输出的信息。\n如果需要查看路线的模拟图，请点击右上角选择对应线路。\n");
 		printt_string(_utf8(temporary_string)); 
 	}
 	return;
@@ -325,7 +338,7 @@ void Find_way_button_clicked(GtkWidget *widget,gpointer data)
 	 gtk_window_set_position(GTK_WINDOW(find_way_type_window),GTK_WIN_POS_CENTER);
 	 //gtk_widget_set_size_request(change_time_window,200,150);
 	 gtk_window_set_resizable(GTK_WINDOW(find_way_type_window),FALSE);
-	 //gtk_window_set_deletable(GTK_WINDOW(find_way_type_window),0);	
+	 gtk_window_set_deletable(GTK_WINDOW(find_way_type_window),0);	
 	
   	 GtkWidget *find_way_type1=GTK_WIDGET(gtk_builder_get_object(main_builder,"find_way_type1"));
      g_signal_connect(find_way_type1,"clicked", G_CALLBACK(Find_way_type_clicked),just_number+1);   
@@ -339,7 +352,7 @@ void Find_way_button_clicked(GtkWidget *widget,gpointer data)
      g_signal_connect(find_way_type5,"clicked", G_CALLBACK(Find_way_type_clicked),just_number+5); 
    	 GtkWidget *find_way_type6=GTK_WIDGET(gtk_builder_get_object(main_builder,"find_way_type6"));
      g_signal_connect(find_way_type6,"clicked", G_CALLBACK(Find_way_type_clicked),just_number+6); 	
-	gtk_widget_hide(find_way_type_window);	
+	 //gtk_widget_hide(find_way_type_window);	
 	 gtk_widget_show_all(find_way_type_window);
 	 return;
 }
@@ -360,7 +373,7 @@ void Drawing_crowded_map(GtkWidget *widget,gpointer data)
 	 cairo_t *cr_map = cairo_create(surface);    // 创建cairo环境，注意参数
      cairo_set_line_width (cr_map, 2.0);
 	 int i,j;
-	 double now_crowded_factor; 
+	 double now_crowded_factor,Slope_of_rgb=1.732;   //Slope_of_rgb应当在1.0到2.0之间 
 	 for(i=1;i<=number_of_station;++i){
 	 	cairo_set_source_rgb(cr_map, 0.0, 0.0, 0.0);
 	 	cairo_arc(cr_map,Stations[i].longitude,Stations[i].latitude,2.5,ANGLE(0.0),ANGLE(360.0));
@@ -369,8 +382,20 @@ void Drawing_crowded_map(GtkWidget *widget,gpointer data)
 	 	for(j=Stations[i].hed_of_edge;j;j=Edge[j].next_edge){
 	 		if(Edge[j].to_station<i||Edge[j].to_station==0) continue;
 	 		now_crowded_factor=Crowdedness[abs(Edge[j].belonging_line)][nowwa_scheme.nowtime];
-	 		cairo_set_source_rgb(cr_map,now_crowded_factor, 0.0, 0.0);
-	 		cairo_move_to(cr_map,Stations[i].longitude,Stations[i].latitude);
+	 		
+	 		//cairo_set_source_rgb(cr_map,(now_crowded_factor>0.5?((now_crowded_factor-0.5)*2):0.0),(now_crowded_factor<0.5?((0.5-now_crowded_factor)*2):0.0), 0.0);
+	 		//方案1，两倍放大 now_crowded_factor-0.5，另一种为0 
+	 		
+			//cairo_set_source_rgb(cr_map,now_crowded_factor*now_crowded_factor,(1.0-now_crowded_factor)*(1.0-now_crowded_factor), 0.0);
+		 	// 方案2， 通过now_crowded_factor和1.0-now_crowded_factor的二次函数实现 
+		 	
+			//cairo_set_source_rgb(cr_map,now_crowded_factor,(1.0-now_crowded_factor), 0.0);
+		 	// 方案3， 通过now_crowded_factor和1.0-now_crowded_factor的一次函数实现 	 		
+
+	 		cairo_set_source_rgb(cr_map,(now_crowded_factor>=0.5?Slope_of_rgb/2.0:now_crowded_factor*Slope_of_rgb),(now_crowded_factor<=0.5?Slope_of_rgb/2.0:(1.0-now_crowded_factor)*Slope_of_rgb), 0.0);
+	 		//方案4， 通过 Slope_of_rgb来调配颜色，对于单一颜色，函数为一个直角梯形，对于综合的颜色，应该是绿色()->黄色(0.5)->红色(1.0) 
+	 		
+			cairo_move_to(cr_map,Stations[i].longitude,Stations[i].latitude);
 	 		cairo_line_to(cr_map,Stations[Edge[j].to_station].longitude,Stations[Edge[j].to_station].latitude);
 	 		cairo_stroke(cr_map);
 	 	}
@@ -442,7 +467,7 @@ void to_print_one_type(GtkWidget *widget,gpointer data)
 		printt_nowway_map(*(int *)data);
 	}
  	GtkWidget *choose_type_to_print = GTK_WIDGET(gtk_builder_get_object(main_builder,"choose_type_to_print"));   
-	gtk_widget_hide(GTK_WIDGET(choose_type_to_print));	 
+	gtk_widget_hide(GTK_WIDGET(choose_type_to_print));	  //关闭选择的界面 
 }
  
  
@@ -452,7 +477,8 @@ void Drawing_nowway_map(GtkWidget *widget,gpointer data)
     gtk_window_set_title(GTK_WINDOW(choose_type_to_print), "选择你要显示的线路");
 	gtk_window_set_position(GTK_WINDOW(choose_type_to_print),GTK_WIN_POS_CENTER);
 	gtk_window_set_resizable(GTK_WINDOW(choose_type_to_print),FALSE);
-	
+	 gtk_window_set_deletable(GTK_WINDOW(choose_type_to_print),0);
+	 	
  	GtkWidget *to_print_type0 = GTK_WIDGET(gtk_builder_get_object(main_builder,"to_print_type0")); 
     g_signal_connect(to_print_type0,"clicked", G_CALLBACK(to_print_one_type), just_number+0);	
  	GtkWidget *to_print_type1 = GTK_WIDGET(gtk_builder_get_object(main_builder,"to_print_type1")); 
@@ -462,7 +488,7 @@ void Drawing_nowway_map(GtkWidget *widget,gpointer data)
  	GtkWidget *to_print_type3 = GTK_WIDGET(gtk_builder_get_object(main_builder,"to_print_type3")); 
     g_signal_connect(to_print_type3,"clicked", G_CALLBACK(to_print_one_type), just_number+3);
  	
-	gtk_widget_hide(GTK_WINDOW(choose_type_to_print));	   
+	//gtk_widget_hide(GTK_WINDOW(choose_type_to_print));	   
 	gtk_widget_show_all(GTK_WINDOW(choose_type_to_print));
 }
  
@@ -479,6 +505,7 @@ int gtk_gui(int argc , char **argv)
     main_builder = gtk_builder_new(); 
 	if(!gtk_builder_add_from_file(main_builder,"./glade_build/Main_Framework.glade",NULL)){
 		printf("Cannot load file!");
+		return 0; 
 	} 
 	
  	/***************
@@ -528,10 +555,8 @@ int gtk_gui(int argc , char **argv)
      g_signal_connect(Free_travel_button,"clicked", G_CALLBACK(Free_travel), NULL);	 
   	
  	
- 	
  	 GtkWidget *Find_way_button=GTK_WIDGET(gtk_builder_get_object(main_builder,"Find_way_button"));
      g_signal_connect(Find_way_button,"clicked", G_CALLBACK(Find_way_button_clicked),NULL);
-     
      
      
      GdkPixbuf *src_pixbuf = gdk_pixbuf_new_from_file("./data/orignal_map.png", NULL);  
@@ -556,7 +581,8 @@ int gtk_gui(int argc , char **argv)
  	
  	
  	
-	/*GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL); // 顶层窗口
+	/*
+	GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL); // 顶层窗口
 	g_signal_connect(window, "destroy", G_CALLBACK (gtk_main_quit), NULL);
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);	// 中央位置显示
 	gtk_widget_set_size_request(window, 400, 300);		    // 窗口最小大小
@@ -575,7 +601,8 @@ int gtk_gui(int argc , char **argv)
  
 	gtk_widget_set_app_paintable(window, TRUE);	// 允许窗口可以绘图
 	//*/
-	gtk_widget_hide(window);		 	
+	
+	//gtk_widget_hide(window);		 	
     gtk_widget_show_all(window);
     gtk_main();//是在每个Gtk应用程序都要调用的函数。程序运行停在这里等待事件(如键盘事件或鼠标事件)的发生，等待用户来操作窗口。
 	return 0;

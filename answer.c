@@ -25,17 +25,7 @@ extern struct Cost_of_scheme station_dis[total_number_of_station][total_number_o
 int vis[total_number_of_station][total_number_of_line],nowpls,my_queue1[max_status],my_queue2[max_status];
 char temporary_string[1000000];
 
-/************************************ 
-	函数名：Traverse_in_line
-	描述：在当前状态下，沿当前线路移动一站 。返回的是移动后的状态 
-	函数原型： struct Cost_of_scheme Traverse_in_line(struct Cost_of_scheme now_status,int aim_line);
-	输入参数： now_situation 当前状态，主要是车站id和时间以及路程
-			   aim_line 要移动的列车线路，其中正负表示不同的方向。 
-	输出参数： 移动一条边之后的状态 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.2  
-	状态 ：已完成，已检查 
-//**********************************/ 
+
 struct Cost_of_scheme Traverse_in_line(struct Cost_of_scheme now_status,int aim_line){
 	int now_edge=Stations[now_status.now_station].hed_of_edge;
 	for(;now_edge;now_edge=Edge[now_edge].next_edge){
@@ -46,18 +36,7 @@ struct Cost_of_scheme Traverse_in_line(struct Cost_of_scheme now_status,int aim_
 	return now_status;
 }
 
-/************************************ 
-	函数名：spfa
-	描述：使用spfa算法计算两点间的最短路，最短指使得maincost最小。 设计最短路状态的时候，使用目前站+目前线路来确保找到最优。
-			并且引进了avoid_status来减少走重复方案的可能 
-	函数原型： int spfa(struct Cost_of_scheme now_status,int typ); 
-	输入参数：now_status 最初的状态 
-			  typ 寻找最短路的模式 
-	输出参数：1 表示运行到了结尾 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查
-//**********************************/ 
+
 int spfa(struct Cost_of_scheme now_status,int typ){
 	struct Cost_of_scheme next_status;
 	int hed=0,endd=1,i,j;
@@ -93,16 +72,7 @@ int spfa(struct Cost_of_scheme now_status,int typ){
 	return 1; 
 }
 
-/************************************ 
-	函数名：Find_the_path
-	描述：通过在spfa里的存储转移方案的指针，反向找到整个路径上的所有状态 
-	函数原型： int Find_the_path(int aimstation,int pls); 
-	输入参数：aimstation 目标车站的编号，最终要从这里倒序找出整个路径 
-	输出参数：返回当前路径的长度 ，如果没有路径就返回0 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查
-//**********************************/ 
+
 int Find_the_path(int aimstation,int pls){
 	struct Cost_of_scheme now_status;
 	int i,j;
@@ -132,23 +102,20 @@ int Find_the_path(int aimstation,int pls){
 	return cnt;
 } 
 
-/************************************ 
-	函数名：print_the_path
-	描述：输出一条寻路方案
-	函数原型： int print_the_path(int pls,int typ);
-	输入参数：pls 输出的这个方案所存储的位置 
-			  typ 这个方案的寻路类型 
-	输出参数：正常结束输出0 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查
-//**********************************/ 
+
 int print_the_path(int pls,int typ){
 	#ifdef debug   
 	 	printf("This is plan %d\n",pls); 
 	#endif
 	
 	char linshi[1000];
+	if(passing_situation[pls][1].number_of_station==0){
+		printf("没有找到路线\n");
+		temporary_string[0]=0;
+		strcat(temporary_string,"没有找到路线\n");
+		return 0; 
+	}
+	
 	
 	int cnt=passing_situation[pls][1].number_of_station+1,i;  
 	//outt(cnt);
@@ -196,6 +163,8 @@ int print_the_path(int pls,int typ){
 
 		printf("你将会在%d:%d,到达%s，此时你的总里程数是%lf\n",passing_situation[pls][i].nowtime/60,passing_situation[pls][i].nowtime%60,Stations[passing_situation[pls][i].now_station].name,passing_situation[pls][i].dist);
 
+	//	printf("tot_crowded = %lf\n",passing_situation[pls][i].tot_crowd); 
+
 		#ifdef gui_print_detailed_information                //因为文本太长  暂时没开 
 		strcat(temporary_string,"你将会在");
 		itoa(passing_situation[pls][i].nowtime/60,linshi,10);strcat(temporary_string,linshi);
@@ -205,33 +174,23 @@ int print_the_path(int pls,int typ){
 		strcat(temporary_string,Stations[passing_situation[pls][i].now_station].name);//strcat(temporary_string,"\n");	
 		strcat(temporary_string," ，此时你的总里程数是");
 		gcvt(passing_situation[pls][i].dist,5,linshi);strcat(temporary_string,linshi);
-		strcat(temporary_string,"\n");		
-		#endif
-		
+		strcat(temporary_string,"\n");	
 		#ifdef debug
 		printf("此时的Maincost:%lf\n",passing_situation[pls][i].maincost);
+		#endif		
+			
 		#endif
+		
+
 	}
 	hh;hh;
 	#ifdef use_gui 
-		strcat(temporary_string,"\n\n\n");
+		strcat(temporary_string,"\n\n");
 	#endif
 	return 0;
 }
 
 
-/************************************ 
-	函数名：find_shortest_path
-	描述：寻路算法的总控制函数，在这个函数里面 
-	函数原型： int find_shortest_path(int aimstation,struct Cost_of_scheme now_status,int typ); 
-	输入参数：aimstation 目标车站的编号，最终要从这里倒序找出全部路径 
-			  now_situation 初始的状态，重要的是当前车站id和时间 ，其他的都应该清零 
-			  typ  寻路的类型 
-	输出参数：在屏幕上完成多条路线的输出 
-	编程者：HUST IS-1901 李文重
-	日期：2021.3.5 
-	状态 ：已完成，已检查  
-//**********************************/ 
 int find_shortest_path(int aimstation,struct Cost_of_scheme now_status,int typ){
 //	can_you_reach_here;
 	memset(avoid_status,0,sizeof(avoid_status));
